@@ -21,9 +21,9 @@ body, html { margin: 0; padding: 0; height: 100%; font-family: 'Pretendard', san
     border-right: none;
 }
 .panel-toggle-btn {
-    position: absolute; top: 20px; 
-    width: 24px; height: 40px;
-    background: #1a5432;
+    position: absolute; top: 40px; 
+    width: 18px; height: 60px;
+    background: #95a6a6;
     color: white; border: none; border-radius: 0 8px 8px 0;
     cursor: pointer; z-index: 20; transition: all 0.3s ease;
     box-shadow: 2px 0 4px rgba(26, 84, 50, 0.2);
@@ -31,7 +31,7 @@ body, html { margin: 0; padding: 0; height: 100%; font-family: 'Pretendard', san
     padding: 0;
 }
 .panel-toggle-btn:hover {
-    background: #5ea132;
+    background: #7f8c8d;
     box-shadow: 2px 0 6px rgba(26, 84, 50, 0.3);
 }
 .panel-toggle-btn:active {
@@ -154,7 +154,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); backgroun
 
 /* 메모장 영역 */
 .memo-panel {
-    height: 200px; padding: 20px 40px; background-color: #fff; border-top: 1px solid #ddd;
+    height: 50px; padding: 20px 40px; background-color: #fff; border-top: 1px solid #ddd;
     display: flex; flex-direction: column;
     position: relative;
 }

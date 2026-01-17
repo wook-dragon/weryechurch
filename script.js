@@ -384,9 +384,11 @@ function initMemoResize() {
     const resizeHandle = document.getElementById('memoResizeHandle');
     
     // 초기 로드 시 높이를 명시적으로 설정 (첫 번째 드래그 시 정확한 계산을 위해)
+    // CSS에서 설정한 높이 값을 그대로 사용
     if (!memoPanel.style.height) {
-        const rect = memoPanel.getBoundingClientRect();
-        memoPanel.style.height = `${rect.height}px`;
+        const computedHeight = window.getComputedStyle(memoPanel).height;
+        // CSS에서 계산된 높이를 그대로 사용 (CSS에서 설정한 값)
+        memoPanel.style.height = computedHeight;
     }
     
     let isResizing = false;
