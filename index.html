@@ -234,6 +234,37 @@
         }
     }
 
+    async function loadTodayMemo() {
+        // 1. 오늘 날짜 구하기 (YYMMDD 형식)
+        const today = new Date();
+        const yy = String(today.getFullYear()).slice(-2);     // 2026 -> 26
+        const mm = String(today.getMonth() + 1).padStart(2, '0'); // 1월 -> 01
+        const dd = String(today.getDate()).padStart(2, '0');  // 18일 -> 18
+        const fileName = `${yy}${mm}${dd}.txt`; // 예: 260118.txt
+
+        // 2. 불러올 경로 설정 (GitHub Pages 주소 기준)
+        // txt 폴더가 songs 폴더와 같은 레벨에 있다고 가정합니다.
+        const memoUrl = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/txt/${fileName}`;
+        const textArea = document.querySelector('.memo-textarea');
+
+        try {
+            // 3. 파일 요청 보내기
+            const response = await fetch(memoUrl);
+
+            // 4. 파일이 존재하면(200 OK) 내용을 textarea에 넣기
+            if (response.ok) {
+                const text = await response.text();
+                textArea.value = text;
+                console.log(`[메모 로드 성공] ${fileName} 내용을 불러왔습니다.`);
+            } else {
+                // 파일이 없으면 그냥 비워둠 (혹은 콘솔에만 로그)
+                console.log(`[메모 없음] ${fileName} 파일이 서버에 없습니다.`);
+            }
+        } catch (error) {
+            console.error("메모 로드 중 에러 발생:", error);
+        }
+    }
+
     function renderLibrary(items) {
         const list = document.getElementById('libraryList');
         list.innerHTML = '';
@@ -405,6 +436,7 @@
     }
 
     loadSongsFromGitHub();
+    loadTodayMemo();
 
 </script>
 
