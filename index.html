@@ -35,12 +35,34 @@
         </div>
 
         <div class="memo-panel">
-            <div class="memo-header">📝 예배 진행 메모</div>
+            <div class="memo-header">
+                <span>📝 예배 진행 메모</span>
+                <button class="date-select-btn" onclick="openDatePicker()">📅 불러오기</button>
+            </div>
             <textarea class="memo-textarea" placeholder="여기에 찬양팀 멘트나 진행 순서를 적어두세요."></textarea>
+        </div>
+
+        <!-- 날짜 선택 모달 -->
+        <div id="datePickerModal" class="date-picker-modal" onclick="closeModalOnBackdrop(event)">
+            <div class="date-picker-content" onclick="event.stopPropagation()">
+                <div class="date-picker-header">
+                    <h3>메모 불러오기</h3>
+                    <button class="close-btn" onclick="closeDatePicker()">×</button>
+                </div>
+                <div class="date-picker-body">
+                    <label for="dateInput">날짜를 선택하세요:</label>
+                    <input type="date" id="dateInput" class="date-input">
+                </div>
+                <div class="date-picker-footer">
+                    <button class="cancel-btn" onclick="closeDatePicker()">취소</button>
+                    <button class="apply-date-btn" onclick="applySelectedDate()">적용</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<script src="config.js"></script>
 <script src="script.js"></script>
 
 </body>

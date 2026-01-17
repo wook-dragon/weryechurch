@@ -1,25 +1,9 @@
-const GITHUB_USERNAME = 'wook-dragon';
-const REPO_NAME = 'weryechurch';
-const FOLDER_NAME = 'songs';
-
-// [중요] 비상용 하드코딩 리스트 (API 오류 시 사용)
-const FALLBACK_SONGS = [
-    "나는 예배자입니다.mp3",
-    "너와 나의 모습이.mp3",
-    "따라따라 갈래요.mp3",
-    "사도신경송.mp3",
-    "생명 주께 있네.mp3",
-    "주의 말씀은 내 발에 등이요(시편119편105절).mp3",
-    "최고의 선물.mp3",
-    "믿음으로 모든 세계가(히브리서11장3절상반절).mp3"
-];
-
 let allSongs = [];
 let selectedIndices = []; 
 
 async function loadSongsFromGitHub() {
     const statusMsg = document.getElementById('statusMsg');
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${FOLDER_NAME}`;
+    const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.REPO_NAME}/contents/${CONFIG.FOLDER_NAME}`;
 
     try {
         const response = await fetch(apiUrl);
@@ -42,10 +26,10 @@ async function loadSongsFromGitHub() {
         console.error(error);
         
         // [비상 모드 작동] 하드코딩 리스트로 목록 생성
-        allSongs = FALLBACK_SONGS.map(filename => ({
+        allSongs = CONFIG.FALLBACK_SONGS.map(filename => ({
             title: filename.replace('.mp3', '').replace('.MP3', ''),
             // 깃허브 페이지 URL 규칙대로 주소 생성 (파일명 인코딩)
-            url: `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/${FOLDER_NAME}/${encodeURIComponent(filename)}`
+            url: `https://${CONFIG.GITHUB_USERNAME}.github.io/${CONFIG.REPO_NAME}/${CONFIG.FOLDER_NAME}/${encodeURIComponent(filename)}`
         })).sort((a, b) => a.title.localeCompare(b.title, 'ko'));
 
         renderLibrary(allSongs);
@@ -55,35 +39,83 @@ async function loadSongsFromGitHub() {
     }
 }
 
-async function loadTodayMemo() {
-    // 1. 오늘 날짜 구하기 (YYMMDD 형식)
-    const today = new Date();
-    const yy = String(today.getFullYear()).slice(-2);     // 2026 -> 26
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // 1월 -> 01
-    const dd = String(today.getDate()).padStart(2, '0');  // 18일 -> 18
-    const fileName = `${yy}${mm}${dd}.txt`; // 예: 260118.txt
+// 날짜를 YYMMDD 형식으로 변환하는 함수
+function formatDateToYYMMDD(date) {
+    const yy = String(date.getFullYear()).slice(-2);
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yy}${mm}${dd}`;
+}
 
-    // 2. 불러올 경로 설정 (GitHub Pages 주소 기준)
-    // txt 폴더가 songs 폴더와 같은 레벨에 있다고 가정합니다.
-    const memoUrl = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/txt/${fileName}`;
+// 특정 날짜의 메모를 불러오는 함수
+async function loadMemoByDate(date) {
+    const fileName = `${formatDateToYYMMDD(date)}.txt`; // 예: 260118.txt
+    const memoUrl = `https://${CONFIG.GITHUB_USERNAME}.github.io/${CONFIG.REPO_NAME}/txt/${fileName}`;
     const textArea = document.querySelector('.memo-textarea');
 
     try {
-        // 3. 파일 요청 보내기
         const response = await fetch(memoUrl);
 
-        // 4. 파일이 존재하면(200 OK) 내용을 textarea에 넣기
         if (response.ok) {
             const text = await response.text();
             textArea.value = text;
             console.log(`[메모 로드 성공] ${fileName} 내용을 불러왔습니다.`);
         } else {
-            // 파일이 없으면 그냥 비워둠 (혹은 콘솔에만 로그)
+            textArea.value = '';
             console.log(`[메모 없음] ${fileName} 파일이 서버에 없습니다.`);
         }
     } catch (error) {
         console.error("메모 로드 중 에러 발생:", error);
+        textArea.value = '';
     }
+}
+
+// 오늘 날짜의 메모를 불러오는 함수 (디폴트)
+async function loadTodayMemo() {
+    const today = new Date();
+    await loadMemoByDate(today);
+}
+
+// 날짜 선택 모달 열기
+function openDatePicker() {
+    const modal = document.getElementById('datePickerModal');
+    const dateInput = document.getElementById('dateInput');
+    
+    // 오늘 날짜를 기본값으로 설정 (YYYY-MM-DD 형식)
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    dateInput.value = `${yyyy}-${mm}-${dd}`;
+    
+    modal.style.display = 'flex';
+}
+
+// 날짜 선택 모달 닫기
+function closeDatePicker() {
+    const modal = document.getElementById('datePickerModal');
+    modal.style.display = 'none';
+}
+
+// 모달 배경 클릭 시 닫기
+function closeModalOnBackdrop(event) {
+    if (event.target.id === 'datePickerModal') {
+        closeDatePicker();
+    }
+}
+
+// 선택한 날짜로 메모 불러오기
+async function applySelectedDate() {
+    const dateInput = document.getElementById('dateInput');
+    const selectedDate = new Date(dateInput.value);
+    
+    if (isNaN(selectedDate.getTime())) {
+        alert('올바른 날짜를 선택해주세요.');
+        return;
+    }
+    
+    await loadMemoByDate(selectedDate);
+    closeDatePicker();
 }
 
 function renderLibrary(items) {
