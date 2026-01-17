@@ -4,10 +4,43 @@ body, html { margin: 0; padding: 0; height: 100%; font-family: 'Pretendard', san
 .container { display: flex; height: 100vh; }
 
 /* [1] 왼쪽 패널 */
+.library-panel-wrapper {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+}
 .library-panel { 
     width: 350px; background: white; border-right: 1px solid #eee; 
     display: flex; flex-direction: column; 
-    box-shadow: 2px 0 10px rgba(0,0,0,0.03); z-index: 10; flex-shrink: 0;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.03); z-index: 10;
+    transition: width 0.3s ease;
+    overflow: hidden;
+}
+.library-panel.collapsed {
+    width: 0;
+    border-right: none;
+}
+.panel-toggle-btn {
+    position: absolute; top: 20px; 
+    width: 24px; height: 40px;
+    background: #1a5432;
+    color: white; border: none; border-radius: 0 8px 8px 0;
+    cursor: pointer; z-index: 20; transition: all 0.3s ease;
+    box-shadow: 2px 0 4px rgba(26, 84, 50, 0.2);
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+}
+.panel-toggle-btn:hover {
+    background: #5ea132;
+    box-shadow: 2px 0 6px rgba(26, 84, 50, 0.3);
+}
+.panel-toggle-btn:active {
+    transform: scale(0.95);
+}
+.toggle-icon {
+    font-size: 14px; font-weight: bold;
+    transition: transform 0.3s ease;
+    display: block;
 }
 .panel-header { padding: 20px; border-bottom: 1px solid #eee; background: #fff; }
 
@@ -123,6 +156,23 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); backgroun
 .memo-panel {
     height: 200px; padding: 20px 40px; background-color: #fff; border-top: 1px solid #ddd;
     display: flex; flex-direction: column;
+    position: relative;
+}
+.memo-resize-handle {
+    position: absolute; top: 0; left: 0; right: 0; height: 8px;
+    cursor: ns-resize; background-color: transparent;
+    z-index: 10; transition: background-color 0.2s;
+}
+.memo-resize-handle:hover {
+    background-color: rgba(26, 84, 50, 0.2);
+}
+.memo-resize-handle::after {
+    content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 40px; height: 4px; background-color: #1a5432; border-radius: 2px;
+    opacity: 0.3; transition: opacity 0.2s;
+}
+.memo-resize-handle:hover::after {
+    opacity: 0.6;
 }
 .memo-header { 
     font-size: 14px; font-weight: bold; color: #1a5432; margin-bottom: 10px; 

@@ -1,5 +1,73 @@
 let allSongs = [];
-let selectedIndices = []; 
+let selectedIndices = [];
+
+// 로컬스토리지에 선택된 인덱스 저장
+function saveSelectedIndices() {
+    try {
+        localStorage.setItem('weryechurch_selectedIndices', JSON.stringify(selectedIndices));
+    } catch (error) {
+        console.error('로컬스토리지 저장 실패:', error);
+    }
+}
+
+// 로컬스토리지에서 선택된 인덱스 불러오기
+function loadSelectedIndices() {
+    try {
+        const saved = localStorage.getItem('weryechurch_selectedIndices');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            // 배열이고 숫자만 포함하는지 검증
+            if (Array.isArray(parsed) && parsed.every(idx => typeof idx === 'number')) {
+                return parsed;
+            }
+        }
+    } catch (error) {
+        console.error('로컬스토리지 불러오기 실패:', error);
+    }
+    return [];
+}
+
+// 패널 접기/펴기 상태 저장
+function savePanelState(isCollapsed) {
+    try {
+        localStorage.setItem('weryechurch_panelCollapsed', JSON.stringify(isCollapsed));
+    } catch (error) {
+        console.error('로컬스토리지 저장 실패:', error);
+    }
+}
+
+// 패널 접기/펴기 상태 불러오기
+function loadPanelState() {
+    try {
+        const saved = localStorage.getItem('weryechurch_panelCollapsed');
+        if (saved !== null) {
+            return JSON.parse(saved);
+        }
+    } catch (error) {
+        console.error('로컬스토리지 불러오기 실패:', error);
+    }
+    return false; // 디폴트는 펴기
+}
+
+// 패널 접기/펴기 토글
+function toggleLibraryPanel() {
+    const panel = document.getElementById('libraryPanel');
+    const toggleBtn = document.getElementById('panelToggleBtn');
+    const toggleIcon = document.querySelector('.toggle-icon');
+    const isCollapsed = panel.classList.contains('collapsed');
+    
+    if (isCollapsed) {
+        panel.classList.remove('collapsed');
+        if (toggleIcon) toggleIcon.textContent = '◀';
+        if (toggleBtn) toggleBtn.style.left = '350px';
+        savePanelState(false);
+    } else {
+        panel.classList.add('collapsed');
+        if (toggleIcon) toggleIcon.textContent = '▶';
+        if (toggleBtn) toggleBtn.style.left = '0px';
+        savePanelState(true);
+    }
+} 
 
 async function loadSongsFromGitHub() {
     const statusMsg = document.getElementById('statusMsg');
@@ -19,7 +87,18 @@ async function loadSongsFromGitHub() {
             .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
 
         renderLibrary(allSongs);
-        statusMsg.innerText = `총 ${allSongs.length}곡 로드 완료`;
+        
+        // 로컬스토리지에서 선택 상태 복원
+        const savedIndices = loadSelectedIndices();
+        // 저장된 인덱스가 현재 목록 범위 내에 있는지 확인
+        selectedIndices = savedIndices.filter(idx => idx >= 0 && idx < allSongs.length);
+        if (selectedIndices.length > 0) {
+            updateBadges();
+            // 선택된 찬양이 있으면 자동으로 플레이어 생성
+            generatePlayers();
+        }
+        
+        statusMsg.innerText = `총 ${allSongs.length}곡`;
         statusMsg.style.color = '#1a5432'; 
 
     } catch (error) {
@@ -33,6 +112,15 @@ async function loadSongsFromGitHub() {
         })).sort((a, b) => a.title.localeCompare(b.title, 'ko'));
 
         renderLibrary(allSongs);
+        
+        // 로컬스토리지에서 선택 상태 복원
+        const savedIndices = loadSelectedIndices();
+        selectedIndices = savedIndices.filter(idx => idx >= 0 && idx < allSongs.length);
+        if (selectedIndices.length > 0) {
+            updateBadges();
+            // 선택된 찬양이 있으면 자동으로 플레이어 생성
+            generatePlayers();
+        }
 
         statusMsg.innerText = `⚠️ 비상 모드: ${allSongs.length}곡`;
         statusMsg.style.color = '#e67e22'; // 주황색 경고
@@ -135,6 +223,7 @@ function renderLibrary(items) {
                 selectedIndices.splice(alreadySelectedIndex, 1);
             }
             updateBadges();
+            saveSelectedIndices(); // 선택 상태 변경 시 저장
         };
 
         div.innerHTML = `
@@ -280,7 +369,8 @@ function formatTime(seconds) {
 
 function resetAll() {
     selectedIndices = [];
-    updateBadges(); 
+    updateBadges();
+    saveSelectedIndices(); // 로컬스토리지도 초기화
     document.getElementById('playerContainer').innerHTML = `
         <div class="empty-state">
             <h1>초기화되었습니다.<br>다시 순서대로 선택해주세요.</h1>
@@ -288,5 +378,81 @@ function resetAll() {
     `;
 }
 
+// 메모 패널 리사이즈 기능
+function initMemoResize() {
+    const memoPanel = document.getElementById('memoPanel');
+    const resizeHandle = document.getElementById('memoResizeHandle');
+    
+    // 초기 로드 시 높이를 명시적으로 설정 (첫 번째 드래그 시 정확한 계산을 위해)
+    if (!memoPanel.style.height) {
+        const rect = memoPanel.getBoundingClientRect();
+        memoPanel.style.height = `${rect.height}px`;
+    }
+    
+    let isResizing = false;
+    let startY = 0;
+    let startHeight = 0;
+
+    resizeHandle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        isResizing = true;
+        startY = e.clientY;
+        
+        // 현재 설정된 height 값을 우선 사용 (더 정확함)
+        const currentHeight = memoPanel.style.height;
+        if (currentHeight) {
+            startHeight = parseFloat(currentHeight);
+        } else {
+            // style.height가 없으면 getBoundingClientRect 사용
+            startHeight = memoPanel.getBoundingClientRect().height;
+        }
+        
+        document.body.style.cursor = 'ns-resize';
+        document.body.style.userSelect = 'none';
+    });
+
+    function handleMouseMove(e) {
+        if (!isResizing) return;
+        
+        // 마우스가 위로 이동하면 높이 증가, 아래로 이동하면 높이 감소
+        const deltaY = startY - e.clientY; // 위로 드래그하면 양수
+        const newHeight = startHeight + deltaY;
+        
+        // 최소 높이 제한 없이 자유롭게 조절 가능
+        if (newHeight > 0) {
+            memoPanel.style.height = `${newHeight}px`;
+        }
+    }
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    document.addEventListener('mouseup', () => {
+        if (isResizing) {
+            isResizing = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+    });
+}
+
+// 페이지 로드 시 패널 상태 복원
+function initPanelState() {
+    const panel = document.getElementById('libraryPanel');
+    const toggleBtn = document.getElementById('panelToggleBtn');
+    const toggleIcon = document.querySelector('.toggle-icon');
+    const isCollapsed = loadPanelState();
+    
+    if (isCollapsed) {
+        panel.classList.add('collapsed');
+        if (toggleIcon) toggleIcon.textContent = '▶';
+        if (toggleBtn) toggleBtn.style.left = '0px';
+    } else {
+        if (toggleIcon) toggleIcon.textContent = '◀';
+        if (toggleBtn) toggleBtn.style.left = '350px';
+    }
+}
+
 loadSongsFromGitHub();
 loadTodayMemo();
+initMemoResize();
+initPanelState();

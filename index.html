@@ -11,20 +11,25 @@
 <body>
 
 <div class="container">
-    <div class="library-panel">
-        <div class="panel-header">
-            <h2>
-                <img src="images/logo.png" alt="로고" onerror="this.style.display='none'">
-                예꿈 찬양 라이브러리
-            </h2>
-            <div id="statusMsg" class="status-msg">파일 불러오는 중...</div>
-            <input type="text" id="searchInput" class="search-box" placeholder="제목 검색..." onkeyup="filterList()">
+    <div class="library-panel-wrapper">
+        <div class="library-panel" id="libraryPanel">
+            <div class="panel-header">
+                <h2>
+                    <img src="images/logo.png" alt="로고" onerror="this.style.display='none'">
+                    예꿈 찬양 라이브러리
+                </h2>
+                <div id="statusMsg" class="status-msg">파일 불러오는 중...</div>
+                <input type="text" id="searchInput" class="search-box" placeholder="제목으로 검색해주세요." onkeyup="filterList()">
+            </div>
+            <div class="song-list" id="libraryList"></div>
+            <div class="action-area">
+                <button class="reset-btn" onclick="resetAll()">초기화 ↺</button>
+                <button class="apply-btn" onclick="generatePlayers()">선택 적용 ▶</button>
+            </div>
         </div>
-        <div class="song-list" id="libraryList"></div>
-        <div class="action-area">
-            <button class="reset-btn" onclick="resetAll()">초기화 ↺</button>
-            <button class="apply-btn" onclick="generatePlayers()">선택 적용 ▶</button>
-        </div>
+        <button class="panel-toggle-btn" id="panelToggleBtn" onclick="toggleLibraryPanel()" title="패널 접기/펴기">
+            <span class="toggle-icon">◀</span>
+        </button>
     </div>
 
     <div class="bottom-section">
@@ -34,7 +39,8 @@
             </div>
         </div>
 
-        <div class="memo-panel">
+        <div class="memo-panel" id="memoPanel">
+            <div class="memo-resize-handle" id="memoResizeHandle"></div>
             <div class="memo-header">
                 <span>📝 예배 진행 메모</span>
                 <button class="date-select-btn" onclick="openDatePicker()">📅 불러오기</button>
