@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Multi Player</title>
+    <style>
+        /* 전체 레이아웃 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 왼쪽: 입력 영역 */
+        .left-panel {
+            width: 300px;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-right: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        h2 { margin-top: 0; font-size: 1.2rem; }
+        
+        textarea {
+            width: 100%;
+            flex-grow: 1;
+            margin-bottom: 10px;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 10px;
+            resize: none;
+            box-sizing: border-box;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        button {
+            padding: 15px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        button:hover { background-color: #cc0000; }
+
+        /* 오른쪽: 영상 출력 영역 */
+        .right-panel {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; /* 간격도 살짝 좁힘 */
+            justify-content: flex-start;
+            align-content: flex-start;
+            box-sizing: border-box;
+        }
+
+        /* 비디오 카드 디자인 (사이즈 축소) */
+        .video-card {
+            width: 300px; /* 기존 480px -> 300px로 축소 */
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 비율 */
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; border: none;
+        }
+
+        /* 영상 제목 스타일 */
+        .video-title {
+            padding: 10px;
+            font-size: 14px;
+            color: #ddd;
+            background-color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* 제목 길면 ... 처리 */
+            height: 20px;
+            line-height: 20px;
+        }
+
+        .placeholder-text {
+            color: #777; width: 100%; text-align: center; margin-top: 50px; font-size: 1.1rem;
+        }
+
+        /* 모바일 대응 */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .left-panel { width: 100%; height: 200px; border-right: none; border-bottom: 1px solid #444; }
+            .video-card { width: 100%; } /* 모바일은 꽉 차게 */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left-panel">
+        <h2>YouTube Links</h2>
+        <p style="font-size:0.8rem; color:#aaa; margin-top:-10px; margin-bottom:10px;">
+            유튜브 주소를 붙여넣고 버튼을 누르세요.
+        </p>
+        <textarea id="urlInput" placeholder="여기에 텍스트를 붙여넣으세요..."></textarea>
+        <button onclick="generatePlayers()">플레이어 생성하기</button>
+    </div>
+
+    <div class="right-panel" id="playerContainer">
+        <div class="placeholder-text">
+            왼쪽에 링크를 넣고 버튼을 눌러주세요.
+        </div>
+    </div>
+</div>
+
+<script>
+    function generatePlayers() {
+        const input = document.getElementById('urlInput').value;
+        const container = document.getElementById('playerContainer');
+        
+        container.innerHTML = ''; // 초기화
+
+        // 유튜브 ID 추출 정규식
+        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/g;
+        
+        let match;
+        let count = 0;
+
+        while ((match = regex.exec(input)) !== null) {
+            const videoId = match[1];
+            count++;
+
+            // 카드 생성
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            
+            // 1. 플레이어 부분
+            // 2. 제목 들어갈 부분 (id를 주어서 나중에 채워넣음)
+            const titleId = 'title-' + count + '-' + Math.random().toString(36).substr(2, 9);
+            
+            card.innerHTML = `
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://www.youtube.com/embed/${videoId}" 
+                        title="YouTube video player" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-title" id="${titleId}">제목 불러오는 중...</div>
+            `;
+            container.appendChild(card);
+
+            // 3. 제목 비동기 요청 (Noembed API 사용)
+            fetchTitle(videoId, titleId);
+        }
+
+        if (count === 0 && input.trim() !== "") {
+            alert("유튜브 링크를 찾지 못했습니다.");
+        }
+    }
+
+    // 유튜브 공식 제목 가져오는 함수
+    function fetchTitle(videoId, elementId) {
+        const url = `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const titleElement = document.getElementById(elementId);
+                if (titleElement && data.title) {
+                    titleElement.innerText = data.title; // 제목 적용
+                    titleElement.title = data.title; // 마우스 올리면 전체 제목 보이기
+                }
+            })
+            .catch(error => {
+                console.log("제목 로드 실패:", error);
+                document.getElementById(elementId).innerText = "제목 없음";
+            });
+    }
+</script>
+
+</body>
+</html>
