@@ -208,7 +208,7 @@
             allSongs = data
                 .filter(item => item.name.toLowerCase().endsWith('.mp3'))
                 .map(item => ({
-                    title: item.name,
+                    title: item.name.replace('.mp3', '').replace('.MP3', ''),
                     url: item.download_url
                 }))
                 .sort((a, b) => a.title.localeCompare(b.title, 'ko'));
