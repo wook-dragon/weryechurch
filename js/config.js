@@ -2,7 +2,7 @@
 const CONFIG = {
     GITHUB_USERNAME: 'wook-dragon',
     REPO_NAME: 'weryechurch',
-    FOLDER_NAME: 'songs',
+    FOLDER_NAME: 'static/songs',
 
     // [중요] 비상용 하드코딩 리스트 (API 오류 시 사용)
     FALLBACK_SONGS: [
