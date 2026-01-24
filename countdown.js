@@ -157,8 +157,8 @@ async function startBGM() {
         playNextSong();
         isPlaying = true;
     } else {
-        alert("재생할 곡이 없습니다. 설정에서 곡을 선택해주세요.");
-        btn.innerText = "🎵 예배 준비하기 (BGM 시작)";
+        alert("재생할 곡이 없습니다. 곡을 선택해주세요.");
+        btn.innerText = "🎵 BGM 시작)";
         btn.disabled = false;
     }
 }
@@ -216,7 +216,6 @@ function saveSettings() {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(excludedTitles));
     closeSettings();
-    alert("저장되었습니다. (다음 재생부터 적용)");
 }
 
 // 모달에 목록 렌더링
