@@ -111,7 +111,7 @@ function updateTimer() {
 
 // 3. GitHub API로 노래 목록 가져오기
 async function loadSongs() {
-    const apiUrl = `https://api.github_wook.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.REPO_NAME}/contents/${CONFIG.FOLDER_NAME}`;
+    const apiUrl = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.REPO_NAME}/contents/${CONFIG.FOLDER_NAME}`;
 
     try {
         const response = await fetch(apiUrl);
