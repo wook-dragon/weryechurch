@@ -158,7 +158,7 @@ async function startBGM() {
         isPlaying = true;
     } else {
         alert("재생할 곡이 없습니다. 곡을 선택해주세요.");
-        btn.innerText = "🎵 BGM 시작)";
+        btn.innerText = "🎵 BGM 시작";
         btn.disabled = false;
     }
 }
