@@ -24,11 +24,12 @@ const BOARD_NODES = [
     { id: 23, x: 40, y: 60 }, { id: 24, x: 25, y: 75 },
 
     { id: 25, x: 25, y: 25 }, { id: 26, x: 40, y: 40 },
-    { id: 27, x: 60, y: 60 }, { id: 28, x: 75, y: 75 }
+    { id: 27, x: 60, y: 60 }, { id: 28, x: 75, y: 75 },
+    { id: 99, x: 105, y: 92, type: 'goal' }
 ];
 
 const NEXT_NODE_MAP = {
-    0: 1, 1: 2, 2: 3, 3: 4, 4: 5,
+    0: 99, 1: 2, 2: 3, 3: 4, 4: 5,
     5: 6, 6: 7, 7: 8, 8: 9, 9: 10,
     10: 11, 11: 12, 12: 13, 13: 14, 14: 15,
     15: 16, 16: 17, 17: 18, 18: 19, 19: 0,
@@ -39,7 +40,7 @@ const NEXT_NODE_MAP = {
 const PREV_NODE_MAP = {
     1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7, 9: 8, 10: 9,
     11: 10, 12: 11, 13: 12, 14: 13, 15: 14, 16: 15, 17: 16, 18: 17, 19: 18, 0: 19,
-    20: 5, 21: 20, 22: 21, 23: 22, 24: 23, 25: 10, 26: 25, 27: 22, 28: 27
+    20: 5, 21: 20, 22: 21, 23: 22, 24: 23, 25: 10, 26: 25, 27: 22, 28: 27, 99: 0
 };
 
 const MOVE_NAMES = {
@@ -415,13 +416,20 @@ function handlePieceClick(piece) {
         if (calc) {
             moves.push({ result: calc.destination, path: calc.path, dist: i });
         }
+
+        // 0번 노드 특수 처리: 1~5가 나왔을 때 새로 시작(1~5번 노드)하는 경로 추가
+        if (piece.location === 0 && i >= 1 && i <= 5) {
+            const startOverPath = [];
+            for (let step = 1; step <= i; step++) startOverPath.push(step);
+            moves.push({ result: i, path: startOverPath, dist: i });
+        }
     });
 
     gameState.currentMoves = moves;
 
     // 렌더링 직후에 하이라이트 추가 (DOM 재생성 시점 고려)
     moves.forEach(m => {
-        let nId = (m.result === 'finished') ? 0 : m.result;
+        let nId = (m.result === 'finished') ? 99 : m.result;
         const el = document.querySelector(`.node[data-node-id="${nId}"]`);
         if (el) el.classList.add('possible-move');
     });
@@ -446,25 +454,37 @@ function calculatePath(currentLoc, steps) {
         } else return null;
     }
 
+    // 갈림길 처리
     if (curr === 5) curr = 20;
     else if (curr === 10) curr = 25;
-    else if (curr === 22) curr = 27;
-    else {
+    else if (curr === 22) {
+        // 중앙 노드(22)에서는 이전 노드가 어디였는지에 따라 방향이 달라짐
+        // 하지만 여기서는 steps 루프의 첫 시작이므로 path.length가 0인 상태
+        // handlePieceClick에서 넘어올 때의 currentLoc이 22인 경우를 처리
+        curr = 27; // 기본적으로 대각선 아래로 (22->27->28->0)
+    } else {
         if (NEXT_NODE_MAP[curr] !== undefined) curr = NEXT_NODE_MAP[curr];
         else return null;
     }
+
+    if (curr === 99) return { destination: 'finished', path: path };
     path.push(curr);
 
     for (let i = 1; i < steps; i++) {
-        if (curr === 0) return { destination: 'finished', path: path };
         if (curr === 22) {
             const prev = path.length >= 2 ? path[path.length - 2] : currentLoc;
             if (prev === 21 || prev === 20 || prev === 5) curr = 23;
             else curr = 27;
-        } else { curr = NEXT_NODE_MAP[curr]; }
+        } else {
+            curr = NEXT_NODE_MAP[curr];
+        }
+
+        if (curr === 99) return { destination: 'finished', path: path };
+        if (curr === undefined) return null; // 예상치 못한 경로 단절 방지
+
         path.push(curr);
     }
-    if (curr === 0) return { destination: 'finished', path: path };
+
     return { destination: curr, path: path };
 }
 
@@ -474,7 +494,7 @@ function handleNodeClick(nodeId) {
     if (!node || !node.classList.contains('possible-move')) return;
 
     const move = gameState.currentMoves.find(m =>
-        m.result === nodeId || (m.result === 'finished' && nodeId === 0)
+        m.result === nodeId || (m.result === 'finished' && nodeId === 99)
     );
 
     if (move) {

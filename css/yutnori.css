@@ -170,6 +170,7 @@ header {
     border-radius: 50px;
     box-shadow: 0 10px 0 #deb887;
     flex-shrink: 0;
+    /* overflow: visible; (default) but explicitly allowing for Node 99 to be visible */
 }
 
 .center-image {
@@ -229,6 +230,36 @@ header {
     animation: bounce 0.5s infinite alternate;
     cursor: pointer;
     z-index: 100;
+}
+
+/* Hidden Goal Node (99) */
+.node[data-node-id="99"] {
+    opacity: 0;
+    pointer-events: none;
+    border-color: transparent;
+    z-index: -100;
+    /* 평소엔 아주 아래로 */
+}
+
+.node[data-node-id="99"].possible-move {
+    opacity: 1;
+    pointer-events: auto;
+    border-color: #FF5722;
+    background-color: rgba(255, 235, 59, 0.9);
+    z-index: 1000;
+    /* 하이라이트 시 최상단 (동기화된 z-index 500대보다 위) */
+}
+
+/* Goal Point Label */
+.node.goal::after {
+    content: '골인';
+    position: absolute;
+    bottom: -25px;
+    font-size: 0.8rem;
+    color: #FF5722;
+    font-weight: bold;
+    width: 100px;
+    text-align: center;
 }
 
 @keyframes bounce {
