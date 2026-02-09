@@ -416,13 +416,6 @@ function handlePieceClick(piece) {
         if (calc) {
             moves.push({ result: calc.destination, path: calc.path, dist: i });
         }
-
-        // 0번 노드 특수 처리: 1~5가 나왔을 때 새로 시작(1~5번 노드)하는 경로 추가
-        if (piece.location === 0 && i >= 1 && i <= 5) {
-            const startOverPath = [];
-            for (let step = 1; step <= i; step++) startOverPath.push(step);
-            moves.push({ result: i, path: startOverPath, dist: i });
-        }
     });
 
     gameState.currentMoves = moves;
