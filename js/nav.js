@@ -5,7 +5,7 @@
     const pages = [
         { name: '라이브러리', url: 'index.html', icon: '🏠' },
         { name: '카운트다운', url: 'countdown.html', icon: '⏳' },
-        { name: '플레이리스트', url: 'bgm.html', icon: '🎶' },
+        { name: '플레이리스트', url: 'bgm.html', icon: '🎧' },
         { name: '미니 윷놀이', url: 'yutnori.html', icon: '🎲' }
     ];
 
