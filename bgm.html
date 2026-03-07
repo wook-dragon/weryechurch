@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WE례교회 플레이리스트</title>
+    <link rel="icon" href="static/images/logo.png" type="image/png">
+    <link rel="stylesheet" href="css/bgm.css">
+    <link rel="stylesheet" href="css/nav.css">
+</head>
+
+<body>
+
+    <div class="bgm-container" id="bgmContainer">
+        <!-- 전역 통합 네비게이션 적용됨 -->
+
+        <div class="sky-background">
+            <div class="cloud cloud-1">☁️</div>
+            <div class="cloud cloud-2">☁️</div>
+        </div>
+
+        <div class="content-wrapper">
+            <h1 class="title">🎶예꿈 플레이리스트</h1>
+
+            <div class="player-stage">
+                <div class="music-visualizer" id="visualizer">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+
+                <div class="music-info">
+                    <span id="currentSongTitle">음악 재생 대기중...</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="button-group">
+                    <!-- <button class="icon-btn side-btn" onclick="playPreviousSong()" title="이전 곡">⏮</button> -->
+                    <button id="playPauseBtn" class="main-btn" onclick="togglePlay()">
+                        <span id="playIcon">▶</span> <span id="btnText">재생 시작</span>
+                    </button>
+                    <button id="settingsBtn" class="icon-btn" onclick="openSettings()" title="플레이리스트 설정">⚙️</button>
+                    <!-- <button class="icon-btn side-btn" onclick="playNextSong()" title="다음 곡">⏭</button> -->
+                </div>
+                <!-- <div class="settings-wrapper" style="margin-top: 10px;">
+                    <button id="settingsBtn" class="icon-btn" onclick="openSettings()" title="플레이리스트 설정">⚙️</button>
+                </div> -->
+
+                <div class="volume-control">
+                    <span class="volume-icon" onclick="toggleMute()" id="muteBtn">🔊</span>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5"
+                        oninput="changeVolume(this.value)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 곡 선택 모달 -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎵 재생할 찬양 선택</h2>
+                <span class="close" onclick="closeSettings()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="list-controls">
+                    <label class="select-all-label">
+                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"> 전체 선택
+                    </label>
+                    <input type="text" id="songSearchInput" class="song-search-input" placeholder="찬양 검색..."
+                        onkeyup="filterSongs()">
+                </div>
+                <div id="songListContainer" class="song-list-container">
+                    <!-- 자바스크립트로 곡 목록이 여기 추가됨 -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="save-btn" onclick="saveSettings()">저장하고 닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bgmPlayer" preload="auto"></audio>
+
+    <script src="js/config.js"></script>
+    <script src="js/bgm.js"></script>
+    <script src="js/nav.js"></script>
+</body>
+
+</html>

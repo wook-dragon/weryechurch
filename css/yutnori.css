@@ -122,6 +122,8 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
+    padding-right: 80px;
+    /* 통합 메뉴와의 겹침 방지 */
     background: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: relative;
