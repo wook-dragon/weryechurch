@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xxd /Users/wook/Desktop/coding/weryechurch/js/config.js)",
+      "Read(//Users/wook/Desktop/church/ppt/**)",
+      "Read(//Users/wook/Desktop/church/ppt/list/**)",
+      "Bash(pip3 install:*)",
+      "Bash(python3)",
+      "Bash(pip3 list:*)",
+      "Bash(pip3 uninstall:*)",
+      "Bash(python3 -m venv /Users/wook/Desktop/church/ppt/.venv)",
+      "Bash(/Users/wook/Desktop/church/ppt/.venv/bin/pip install:*)",
+      "Bash(/Users/wook/Desktop/church/ppt/.venv/bin/python3)",
+      "Bash(open \"/Users/wook/Desktop/church/ppt/260412.pptx\")",
+      "Bash(ls -t /Users/wook/Desktop/church/ppt/*.pptx)",
+      "Bash(ls /Users/wook/Desktop/church/ppt/list/*.pptx)",
+      "Bash(/Users/wook/Desktop/church/ppt/.venv/bin/python -c \"import pptx; print\\(pptx.__version__\\)\")",
+      "Bash(/Users/wook/Desktop/church/ppt/.venv/bin/python)"
+    ],
+    "additionalDirectories": [
+      "/Users/wook/Desktop/coding/weryechurch/.claude",
+      "/Users/wook/Desktop/church/ppt"
+    ]
+  }
+}
