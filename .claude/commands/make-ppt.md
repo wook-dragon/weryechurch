@@ -31,14 +31,20 @@
   2. `ppt/presentation.xml`의 `sldIdLst`와 `ppt/_rels/presentation.xml.rels`를 파싱하여 슬라이드 순서를 파악한다
   3. 찬양타이틀~대표기도 사이의 곡 슬라이드를 `sldIdLst`, `presentation.xml.rels`, 파일 dict에서 제거한다
   4. 각 곡 pptx도 ZIP으로 읽어 슬라이드를 삽입한다
+- 곡 슬라이드 제거 시 **공유 미디어 보호** (매우 중요):
+  - 미디어 파일은 여러 슬라이드가 공유하는 경우가 있다 (예: `hdphoto1.wdp` 같은 공통 배경)
+  - 제거 전에 **살아남을 슬라이드들**이 참조하는 미디어 파일 목록(`protected_media`)을 먼저 수집한다
+  - 제거 대상 슬라이드의 미디어라도 `protected_media`에 있으면 절대 삭제하지 않는다
+  - 이 보호 로직이 없으면 기존 도입부/후반부 슬라이드의 이미지가 깨진다
 - 슬라이드 삽입 방법 (곡 pptx의 각 슬라이드마다):
   1. 소스 slideN.xml과 slideN.xml.rels를 그대로 복사한다 (새 번호로 rename)
   2. .rels 파일 내 미디어 참조(`../media/...`)의 실제 파일을 새 이름으로 복사한다 (전역 카운터로 충돌 방지)
   3. .rels 파일 내 `slideLayout` 관계의 Target을 타겟 pptx의 기존 슬라이드 layout 경로로 교체한다
   4. .rels 파일의 미디어 경로를 새 이름으로 업데이트한다
   5. `presentation.xml.rels`에 새 슬라이드 Relationship을 추가한다
-  6. `sldIdLst`에 새 sldId를 찬양타이틀 바로 뒤(이전 삽입 슬라이드 뒤)에 삽입한다
+  6. `sldIdLst`에 새 sldId를 직전 삽입 슬라이드 바로 뒤에 삽입한다 (첫 곡은 찬양타이틀 뒤)
   7. `[Content_Types].xml`에 새 슬라이드의 Override를 추가한다
+- 곡 삽입 순서 추적 시 **insert_after 인덱스**는 직전 삽입 슬라이드들이 `slide_order` 끝에 append되므로, 다음 곡의 기준점은 `old_len + added - 1` (마지막 삽입 슬라이드 인덱스)로 갱신한다
 - **슬라이드 XML과 rId는 원본 그대로 유지**되므로 이미지 매핑 문제가 발생하지 않는다
 - 최종적으로 모든 변경된 XML과 파일을 ZIP으로 다시 저장한다
 
@@ -56,4 +62,5 @@
 - **python-pptx의 `add_slide` + `relate_to` + `deepcopy` 방식은 이미지 rId 매핑이 꼬이므로 절대 사용하지 않는다**
 - 반드시 ZIP 레벨(`zipfile` + `lxml`)에서 슬라이드 파일과 미디어를 직접 복사한다
 - 미디어 파일명은 전역 카운터로 고유하게 생성하여 충돌을 방지한다
-- 삽입 완료 후 python-pptx로 열어서 각 슬라이드의 이미지 MD5 해시를 소스와 비교 검증한다
+- **공유 미디어 파일(hdphoto1.wdp 등 배경)을 반드시 보호한다** — 제거 대상 슬라이드가 참조하더라도 살아남는 슬라이드도 참조하면 삭제 금지
+- 삽입 완료 후 모든 슬라이드의 미디어 참조가 실제로 존재하는지 검증한다 (깨진 참조 없음 확인)
