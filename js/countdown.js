@@ -31,14 +31,17 @@ function setTargetTime() {
     const now = new Date();
     targetTime = new Date(now);
 
-    // [테스트 모드] 다음 1분(분 단위) 기준으로 카운트다운
-    // targetTime.setMinutes(now.getMinutes() + 1);
-    // targetTime.setSeconds(0);
-    // targetTime.setMilliseconds(0);
+    // URL 파라미터로 목표 분 지정 가능 (예: ?min=50 → 다음 :50)
+    // 파라미터 없으면 다음 정각(:00)이 디폴트
+    const params = new URLSearchParams(window.location.search);
+    const rawMin = params.get('min');
+    const parsed = rawMin !== null ? parseInt(rawMin, 10) : 0;
+    const targetMinute = (Number.isFinite(parsed) && parsed >= 0 && parsed <= 59) ? parsed : 0;
 
-    // [실제 모드] 다음 정각 기준 (예: 11시, 12시)
-    targetTime.setHours(now.getHours() + 1);
-    targetTime.setMinutes(0);
+    // 현재 분이 target 분 이상이면 다음 시간대로
+    const hourOffset = now.getMinutes() >= targetMinute ? 1 : 0;
+    targetTime.setHours(now.getHours() + hourOffset);
+    targetTime.setMinutes(targetMinute);
     targetTime.setSeconds(0);
     targetTime.setMilliseconds(0);
 
