@@ -41,12 +41,6 @@
             letter-spacing: 0.02em;
         }
 
-        .subtitle {
-            margin-top: 8px;
-            font-size: 0.85rem;
-            opacity: 0.65;
-        }
-
         .visualizer {
             display: flex;
             align-items: flex-end;
@@ -170,7 +164,6 @@
 <body>
     <div class="stage">
         <h1 class="title">🎵 WITH 플레이리스트</h1>
-        <p class="subtitle">무한 반복 재생</p>
 
         <div class="visualizer" id="visualizer">
             <div class="bar"></div>
@@ -217,13 +210,9 @@
             seek.style.setProperty('--progress', (seek.value / 10) + '%');
         }
 
-        function updateDuration() {
+        player.addEventListener('loadedmetadata', () => {
             durationEl.textContent = formatTime(player.duration);
-        }
-
-        // VBR mp3라 브라우저가 재생 중 길이를 다시 계산하는 경우가 있음
-        player.addEventListener('loadedmetadata', updateDuration);
-        player.addEventListener('durationchange', updateDuration);
+        });
 
         player.addEventListener('timeupdate', () => {
             if (seeking || !player.duration) return;
