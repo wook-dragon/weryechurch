@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1b2a4a">
+    <title>WITH 플레이리스트</title>
+    <link rel="icon" href="../static/images/logo.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+            background: linear-gradient(160deg, #1b2a4a 0%, #2b3f6b 45%, #4a3f70 100%);
+            color: #fff;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .stage {
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .subtitle {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            opacity: 0.65;
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 7px;
+            height: 90px;
+            margin: 40px 0 32px;
+        }
+
+        .visualizer .bar {
+            width: 9px;
+            height: 18px;
+            border-radius: 6px;
+            background: linear-gradient(180deg, #8fd0ff, #6f8cff);
+            transition: height 0.3s ease;
+        }
+
+        .visualizer.playing .bar {
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .visualizer.playing .bar:nth-child(2) { animation-delay: 0.15s; }
+        .visualizer.playing .bar:nth-child(3) { animation-delay: 0.3s; }
+        .visualizer.playing .bar:nth-child(4) { animation-delay: 0.45s; }
+        .visualizer.playing .bar:nth-child(5) { animation-delay: 0.6s; }
+
+        @keyframes bounce {
+            0%, 100% { height: 18px; }
+            50% { height: 78px; }
+        }
+
+        .play-btn {
+            width: 108px;
+            height: 108px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #fff;
+            font-size: 2.6rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: transform 0.15s ease, background 0.2s ease;
+        }
+
+        .play-btn:active {
+            transform: scale(0.94);
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        .status {
+            margin-top: 24px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            min-height: 1.2em;
+        }
+
+        .seek-wrap {
+            margin-top: 28px;
+        }
+
+        .seek {
+            width: 100%;
+            height: 26px;
+            background: transparent;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .seek::-webkit-slider-runnable-track {
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #8fd0ff var(--progress, 0%), rgba(255, 255, 255, 0.2) var(--progress, 0%));
+        }
+
+        .seek::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            margin-top: -6px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+        }
+
+        .seek::-moz-range-track {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .seek::-moz-range-progress {
+            height: 6px;
+            border-radius: 3px;
+            background: #8fd0ff;
+        }
+
+        .seek::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border: none;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .time-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2px;
+            font-size: 0.75rem;
+            font-variant-numeric: tabular-nums;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stage">
+        <h1 class="title">🎵 WITH 플레이리스트</h1>
+        <p class="subtitle">무한 반복 재생</p>
+
+        <div class="visualizer" id="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+
+        <button class="play-btn" id="playBtn" aria-label="재생">▶</button>
+
+        <div class="seek-wrap">
+            <input type="range" class="seek" id="seek" min="0" max="1000" value="0" step="1" aria-label="재생 위치">
+            <div class="time-row">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <p class="status" id="status">재생 버튼을 눌러주세요</p>
+    </div>
+
+    <audio id="player" src="../static/songs/with_playlist.mp3" loop preload="auto" playsinline></audio>
+
+    <script>
+        const player = document.getElementById('player');
+        const playBtn = document.getElementById('playBtn');
+        const visualizer = document.getElementById('visualizer');
+        const status = document.getElementById('status');
+        const seek = document.getElementById('seek');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+
+        let seeking = false;
+
+        function formatTime(sec) {
+            if (!isFinite(sec)) return '0:00';
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return m + ':' + String(s).padStart(2, '0');
+        }
+
+        function paintSeek() {
+            seek.style.setProperty('--progress', (seek.value / 10) + '%');
+        }
+
+        player.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(player.duration);
+        });
+
+        player.addEventListener('timeupdate', () => {
+            if (seeking || !player.duration) return;
+            seek.value = (player.currentTime / player.duration) * 1000;
+            currentTimeEl.textContent = formatTime(player.currentTime);
+            paintSeek();
+        });
+
+        seek.addEventListener('input', () => {
+            seeking = true;
+            currentTimeEl.textContent = formatTime((seek.value / 1000) * (player.duration || 0));
+            paintSeek();
+        });
+
+        function commitSeek() {
+            if (!seeking) return;
+            seeking = false;
+            if (player.duration) {
+                player.currentTime = (seek.value / 1000) * player.duration;
+            }
+        }
+
+        seek.addEventListener('change', commitSeek);
+        seek.addEventListener('touchend', commitSeek);
+
+        playBtn.addEventListener('click', () => {
+            if (player.paused) {
+                player.play().catch(() => {
+                    status.textContent = '재생할 수 없습니다. 다시 시도해주세요.';
+                });
+            } else {
+                player.pause();
+            }
+        });
+
+        player.addEventListener('play', () => {
+            playBtn.textContent = '⏸';
+            playBtn.setAttribute('aria-label', '정지');
+            visualizer.classList.add('playing');
+            status.textContent = '재생 중';
+        });
+
+        player.addEventListener('pause', () => {
+            playBtn.textContent = '▶';
+            playBtn.setAttribute('aria-label', '재생');
+            visualizer.classList.remove('playing');
+            status.textContent = '일시정지';
+        });
+
+        player.addEventListener('waiting', () => {
+            status.textContent = '불러오는 중...';
+        });
+
+        // loop 속성이 무시되는 브라우저 대비
+        player.addEventListener('ended', () => {
+            player.currentTime = 0;
+            player.play();
+        });
+    </script>
+</body>
+
+</html>
