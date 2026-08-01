@@ -39,5 +39,6 @@ const CONFIG = {
     "예수님 안에서 우리는 하나.mp3",
     "믿음의 세대.mp3",
     "성령님 환영합니다.mp3",
+    "with_playlist.mp3",
   ],
 };
