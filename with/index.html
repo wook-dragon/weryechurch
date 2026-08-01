@@ -217,9 +217,13 @@
             seek.style.setProperty('--progress', (seek.value / 10) + '%');
         }
 
-        player.addEventListener('loadedmetadata', () => {
+        function updateDuration() {
             durationEl.textContent = formatTime(player.duration);
-        });
+        }
+
+        // VBR mp3라 브라우저가 재생 중 길이를 다시 계산하는 경우가 있음
+        player.addEventListener('loadedmetadata', updateDuration);
+        player.addEventListener('durationchange', updateDuration);
 
         player.addEventListener('timeupdate', () => {
             if (seeking || !player.duration) return;
