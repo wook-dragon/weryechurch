@@ -273,6 +273,14 @@
             status.textContent = '불러오는 중...';
         });
 
+        function restoreStatus() {
+            status.textContent = player.paused ? '일시정지' : '재생 중';
+        }
+
+        player.addEventListener('playing', restoreStatus);
+        player.addEventListener('canplay', restoreStatus);
+        player.addEventListener('seeked', restoreStatus);
+
         // loop 속성이 무시되는 브라우저 대비
         player.addEventListener('ended', () => {
             player.currentTime = 0;
