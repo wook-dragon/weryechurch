@@ -95,23 +95,55 @@ body {
     }
 }
 
+.split-layout {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    align-items: stretch;
+    /* 좌우 박스 높이를 더 큰 쪽에 맞춤 */
+    justify-content: center;
+    gap: 2vw;
+    padding: 2vh 2vw 120px;
+    /* 아래 잔디 영역만큼 여백 확보 */
+}
+
+.panel {
+    flex: 1 1 50%;
+    min-width: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.panel-left {
+    justify-content: flex-end;
+}
+
+.panel-right {
+    justify-content: flex-start;
+}
+
 .content-wrapper {
     position: relative;
     z-index: 10;
     text-align: center;
     background: rgba(255, 255, 255, 0.3);
-    padding: 3rem 5rem;
+    width: 100%;
+    max-width: 760px;
+    padding: 2.5rem 2rem;
     border-radius: 30px;
     backdrop-filter: blur(5px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.18);
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 20px;
 }
 
 .title {
-    font-size: 3rem;
+    font-size: clamp(1.8rem, 3.2vw, 3rem);
     color: #2c3e50;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
     margin-bottom: 10px;
@@ -119,7 +151,7 @@ body {
 
 /* 완료 메시지 */
 .finish-message {
-    font-size: 8rem;
+    font-size: clamp(3rem, 7vw, 8rem);
     color: #1a5432;
     text-shadow: 4px 4px 0px #fff;
     animation: bounceIn 1s;
@@ -148,8 +180,8 @@ body {
 }
 
 .timer {
-    font-size: 15rem;
-    /* 매우 크게 */
+    font-size: clamp(4rem, 13vw, 12rem);
+    /* 반쪽 화면에 맞춰 반응형 */
     font-weight: bold;
     color: #4a90e2;
     /* 기본: 파란색 계열 */
@@ -162,7 +194,7 @@ body {
 
 /* 10초 카운트다운 (긴박함) */
 .timer.urgent {
-    font-size: 25rem;
+    font-size: clamp(7rem, 22vw, 20rem);
     /* 엄청 크게 확대 */
     text-shadow: 6px 6px 0px #fff, 0 0 30px rgba(139, 0, 0, 0.5);
     /* 그림자도 좀 더 진하게 */
@@ -429,4 +461,147 @@ body {
 
 .save-btn:hover {
     background-color: #144226;
+}
+
+/* --- 오른쪽: 예배 약속 카드 --- */
+.rules-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    max-width: 720px;
+    background: rgba(255, 255, 255, 0.45);
+    padding: 2.5rem 2.2rem;
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    animation: fadeIn 0.8s ease-in;
+}
+
+.rules-title {
+    font-size: clamp(1.5rem, 2.6vw, 2.6rem);
+    color: #1a5432;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px dashed rgba(26, 84, 50, 0.3);
+}
+
+.rules-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.6vh, 20px);
+}
+
+.rule-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.7);
+    padding: clamp(10px, 1.6vh, 18px) clamp(14px, 1.4vw, 22px);
+    border-radius: 18px;
+    box-shadow: 0 3px 8px rgba(31, 38, 135, 0.08);
+    animation: slideInRight 0.5s ease-out backwards;
+}
+
+.rule-item:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.rule-item:nth-child(2) {
+    animation-delay: 0.25s;
+}
+
+.rule-item:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.rule-item:nth-child(4) {
+    animation-delay: 0.55s;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.rule-icon {
+    font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.rule-text {
+    font-size: clamp(1.05rem, 1.7vw, 1.9rem);
+    color: #2c3e50;
+    line-height: 1.5;
+    word-break: keep-all;
+}
+
+/* 핵심 키워드 강조 (형광펜 느낌) */
+.rule-key {
+    color: #1a5432;
+    background: linear-gradient(to top, rgba(94, 161, 50, 0.3) 42%, transparent 42%);
+    border-radius: 4px;
+    /* 조사(을/를/만)가 자연스럽게 붙도록 좌우 여백은 두지 않음 */
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+/* --- 좁은 화면: 위아래로 쌓기 --- */
+@media (max-width: 900px) {
+    body {
+        overflow: auto;
+    }
+
+    .countdown-container {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .split-layout {
+        flex-direction: column;
+        height: auto;
+        gap: 24px;
+        padding: 80px 16px 140px;
+    }
+
+    .panel {
+        flex: none;
+        width: 100%;
+        height: auto;
+        justify-content: center;
+    }
+
+    .timer {
+        font-size: clamp(4rem, 26vw, 11rem);
+    }
+
+    .timer.urgent {
+        font-size: clamp(7rem, 42vw, 18rem);
+    }
+
+    .title {
+        font-size: clamp(1.6rem, 6vw, 2.6rem);
+    }
+
+    .rule-text {
+        font-size: clamp(1rem, 3.8vw, 1.5rem);
+    }
+
+    .rules-title {
+        font-size: clamp(1.4rem, 5vw, 2rem);
+    }
 }
