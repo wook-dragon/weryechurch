@@ -9,6 +9,8 @@ const CONFIG = {
     "Deep Down in My Heart.mp3",
     "with_playlist.mp3",
     "가장특별해.mp3",
+    "강하고 담대하라(여호수아 1장 9절).mp3",
+    "나는 하나님을 예배해요.mp3",
     "내 마음의 한자리.mp3",
     "내 안에 부어주소서.mp3",
     "믿음의 세대.mp3",
