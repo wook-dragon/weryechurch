@@ -6,6 +6,7 @@ const CONFIG = {
 
   // [중요] 비상용 하드코딩 리스트 (API 오류 시 사용)
   FALLBACK_SONGS: [
+    "10월 생일 축하송.mp3",
     "Deep Down in My Heart.mp3",
     "with_playlist.mp3",
     "가장특별해.mp3",
@@ -21,6 +22,7 @@ const CONFIG = {
     "예수님 한 줄 기차.mp3",
     "예수님의 사람.mp3",
     "우리 함께 기뻐해.mp3",
+    "우리는 멋진 예배자!.mp3",
     "잊지 마세요.mp3",
     "주님 만난 날.mp3",
     "찬양이언제나넘치면.mp3",

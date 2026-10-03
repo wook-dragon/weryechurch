@@ -103,25 +103,25 @@ body {
     align-items: stretch;
     /* 좌우 박스 높이를 더 큰 쪽에 맞춤 */
     justify-content: center;
-    gap: 2vw;
-    padding: 2vh 2vw 120px;
+    gap: 1.5vw;
+    padding: 3vh 1.5vw 110px;
     /* 아래 잔디 영역만큼 여백 확보 */
 }
 
 .panel {
-    flex: 1 1 50%;
     min-width: 0;
     display: flex;
     align-items: stretch;
     justify-content: center;
 }
 
+/* 약 43:57 분할 — 타이머(5글자)보다 규칙 문장이 폭을 더 필요로 함 */
 .panel-left {
-    justify-content: flex-end;
+    flex: 2 1 0;
 }
 
 .panel-right {
-    justify-content: flex-start;
+    flex: 2.7 1 0;
 }
 
 .content-wrapper {
@@ -130,8 +130,7 @@ body {
     text-align: center;
     background: rgba(255, 255, 255, 0.3);
     width: 100%;
-    max-width: 760px;
-    padding: 2.5rem 2rem;
+    padding: clamp(24px, 4vh, 48px) clamp(16px, 2vw, 40px);
     border-radius: 30px;
     backdrop-filter: blur(5px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
@@ -143,7 +142,7 @@ body {
 }
 
 .title {
-    font-size: clamp(1.8rem, 3.2vw, 3rem);
+    font-size: clamp(1.8rem, min(3vw, 5.4vh), 4rem);
     color: #2c3e50;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
     margin-bottom: 10px;
@@ -151,7 +150,7 @@ body {
 
 /* 완료 메시지 */
 .finish-message {
-    font-size: clamp(3rem, 7vw, 8rem);
+    font-size: clamp(3rem, min(6vw, 11vh), 8rem);
     color: #1a5432;
     text-shadow: 4px 4px 0px #fff;
     animation: bounceIn 1s;
@@ -180,8 +179,8 @@ body {
 }
 
 .timer {
-    font-size: clamp(4rem, 13vw, 12rem);
-    /* 반쪽 화면에 맞춰 반응형 */
+    font-size: clamp(4rem, min(13.5vw, 24vh), 18rem);
+    /* 왼쪽 박스 폭·화면 높이에 맞춰 반응형 */
     font-weight: bold;
     color: #4a90e2;
     /* 기본: 파란색 계열 */
@@ -194,7 +193,7 @@ body {
 
 /* 10초 카운트다운 (긴박함) */
 .timer.urgent {
-    font-size: clamp(7rem, 22vw, 20rem);
+    font-size: clamp(7rem, min(22vw, 42vh), 28rem);
     /* 엄청 크게 확대 */
     text-shadow: 6px 6px 0px #fff, 0 0 30px rgba(139, 0, 0, 0.5);
     /* 그림자도 좀 더 진하게 */
@@ -471,9 +470,8 @@ body {
     flex-direction: column;
     justify-content: center;
     width: 100%;
-    max-width: 720px;
     background: rgba(255, 255, 255, 0.45);
-    padding: 2.5rem 2.2rem;
+    padding: clamp(24px, 3.5vh, 44px) clamp(16px, 2vw, 40px);
     border-radius: 30px;
     backdrop-filter: blur(5px);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
@@ -482,12 +480,12 @@ body {
 }
 
 .rules-title {
-    font-size: clamp(1.5rem, 2.6vw, 2.6rem);
+    font-size: clamp(1.5rem, min(2.9vw, 5.2vh), 4rem);
     color: #1a5432;
     text-align: center;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
-    padding-bottom: 1rem;
-    margin-bottom: 1.5rem;
+    padding-bottom: clamp(10px, 1.8vh, 22px);
+    margin-bottom: clamp(12px, 2.6vh, 32px);
     border-bottom: 3px dashed rgba(26, 84, 50, 0.3);
 }
 
@@ -495,15 +493,15 @@ body {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: clamp(10px, 1.6vh, 20px);
+    gap: clamp(10px, 2.2vh, 28px);
 }
 
 .rule-item {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: clamp(12px, 1vw, 20px);
     background: rgba(255, 255, 255, 0.7);
-    padding: clamp(10px, 1.6vh, 18px) clamp(14px, 1.4vw, 22px);
+    padding: clamp(10px, 2.2vh, 28px) clamp(14px, 1.4vw, 28px);
     border-radius: 18px;
     box-shadow: 0 3px 8px rgba(31, 38, 135, 0.08);
     animation: slideInRight 0.5s ease-out backwards;
@@ -538,15 +536,15 @@ body {
 }
 
 .rule-icon {
-    font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+    font-size: clamp(1.6rem, min(2.9vw, 5.2vh), 4rem);
     line-height: 1;
     flex-shrink: 0;
 }
 
 .rule-text {
-    font-size: clamp(1.05rem, 1.7vw, 1.9rem);
+    font-size: clamp(1.05rem, min(2.4vw, 4.3vh), 3.4rem);
     color: #2c3e50;
-    line-height: 1.5;
+    line-height: 1.4;
     word-break: keep-all;
 }
 
